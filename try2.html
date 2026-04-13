@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&display=swap" rel="stylesheet">
 
 <style>
-/* ===================== trystyle.css (pastel + responsive) ===================== */
 :root{
   --bg: #fbfbff;
   --bg2:#ffffff;
@@ -836,7 +835,7 @@ input[type=text]:focus{
 
 <div class="layout">
 
-  <!-- LEFT -->
+  
   <div class="left-panel">
 
     <div>
@@ -892,7 +891,6 @@ input[type=text]:focus{
 
   </div>
 
-  <!-- RIGHT -->
   <div class="right-panel" id="right-panel">
     <div class="welcome-screen">
       <div class="welcome-icon">⊢</div>
@@ -913,10 +911,6 @@ input[type=text]:focus{
 </div>
 
 <script>
-/* ===================== tryapp.js (unchanged logic, inlined) ===================== */
-// ──────────────────────────────────────────────
-//  EXAMPLES
-// ──────────────────────────────────────────────
 const EXAMPLES = [
   { text: "S -> AB | a\nA -> aA | a\nB -> bB | b", start: "S" },
   { text: "S -> AB | eps\nA -> aA | eps\nB -> bB | b", start: "S" },
@@ -929,9 +923,6 @@ function loadEx(i) {
   document.getElementById('start-sym').value = EXAMPLES[i].start;
 }
 
-// ──────────────────────────────────────────────
-//  PARSING
-// ──────────────────────────────────────────────
 function parseGrammar(text, startSym) {
   const rules = {};
   const lines = text.trim().split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('//'));
@@ -966,9 +957,6 @@ function cloneState(s) {
   return { rules: cloneRules(s.rules), variables: new Set([...s.variables]), start: s.start };
 }
 
-// ──────────────────────────────────────────────
-//  TOKENIZER
-// ──────────────────────────────────────────────
 function tokenize(prod, variables) {
   if (prod === 'ε') return ['ε'];
   const tokens = [];
@@ -994,9 +982,6 @@ function getAllTerminals(rules, variables) {
   return t;
 }
 
-// ──────────────────────────────────────────────
-//  TRANSFORMATIONS
-// ──────────────────────────────────────────────
 let varCounter = 0;
 function freshVar(prefix, vars) {
   let v;
@@ -1030,7 +1015,6 @@ function step_removeUseless(state) {
   const r = cloneRules(rules);
   const vars = new Set([...variables]);
 
-  // Generating
   const generating = new Set();
   let changed = true;
   while (changed) {
@@ -1054,7 +1038,7 @@ function step_removeUseless(state) {
     if (!r[v].size) { delete r[v]; vars.delete(v); }
   }
 
-  // Reachable
+ 
   const reachable = new Set([start]);
   const queue = [start];
   while (queue.length) {
@@ -1086,7 +1070,7 @@ function step_removeEpsilon(state) {
   const r = cloneRules(rules);
   const vars = new Set([...variables]);
 
-  // Find nullable
+ 
   const nullable = new Set();
   for (const v of vars) if (r[v] && r[v].has('ε')) nullable.add(v);
   let changed = true;
@@ -1101,7 +1085,7 @@ function step_removeEpsilon(state) {
     }
   }
 
-  // Expand combinations
+
   for (const v of vars) {
     const expanded = new Set();
     for (const prod of (r[v] || [])) {
@@ -1179,7 +1163,6 @@ function step_toCNF(state) {
   const termMap = {};
   const newTermVars = [];
 
-  // Replace terminals in long/mixed productions
   for (const v of [...vars]) {
     const newP = new Set();
     for (const prod of [...r[v]]) {
@@ -1201,7 +1184,6 @@ function step_toCNF(state) {
     r[v] = newP;
   }
 
-  // Break into binary
   const newChainVars = [];
   for (const v of [...vars]) {
     if (newTermVars.includes(v)) continue;
@@ -1246,7 +1228,6 @@ function step_toGNF(state) {
 
   const orderedVars = [start, ...[...vars].filter(v => v !== start).sort()];
 
-  // Phase 1: Eliminate left recursion
   for (let i = 0; i < orderedVars.length; i++) {
     const Ai = orderedVars[i];
     if (!r[Ai]) r[Ai] = new Set();
@@ -1268,7 +1249,6 @@ function step_toGNF(state) {
       toAdd.forEach(p => r[Ai].add(p));
     }
 
-    // Immediate left recursion
     const rec = [], nonRec = [];
     for (const prod of r[Ai]) {
       const toks = tokenize(prod, vars);
@@ -1287,7 +1267,6 @@ function step_toGNF(state) {
     }
   }
 
-  // Phase 2: Substitute until all start with terminal
   for (let iter = 0; iter < 80; iter++) {
     let changed = false;
     for (const v of [...vars]) {
@@ -1322,9 +1301,6 @@ function step_toGNF(state) {
   };
 }
 
-// ──────────────────────────────────────────────
-//  RENDERING
-// ──────────────────────────────────────────────
 function renderRHS(prod, vars) {
   if (prod === 'ε') return `<span class="sym-eps">ε</span>`;
   const toks = tokenize(prod, vars);
@@ -1374,9 +1350,6 @@ const STEP_DEFS = [
   { id: 6, title: "Greibach Normal Form", sub: "A → aα, terminal-first", icon: "GNF", cls: "icon-gnf", tag: "GNF", tagcls: "tag-gnf", cardcls: "gnf-card" }
 ];
 
-// ──────────────────────────────────────────────
-//  MAIN CONVERSION
-// ──────────────────────────────────────────────
 function runConversion() {
   const text = document.getElementById('grammar-input').value.trim();
   const startSym = document.getElementById('start-sym').value.trim() || 'S';
@@ -1394,34 +1367,27 @@ function runConversion() {
   varCounter = 0;
   const steps = [];
 
-  // Step 0: Original
   steps.push({ def: STEP_DEFS[0], state: cloneState(g), result: { explanation: { summary: "The original grammar as entered. Variables are uppercase, terminals are lowercase. This is our starting point — we will systematically transform this CFG without changing the language it generates (except possibly for ε).", formal: [] }, changes: { added: [], removed: [] } } });
 
-  // Step 1
   const s1 = step_newStart(cloneState(g));
   steps.push({ def: STEP_DEFS[1], state: { rules: s1.rules, variables: s1.variables, start: s1.start }, result: s1 });
 
-  // Step 2
   const s2r = step_removeUseless({ rules: s1.rules, variables: s1.variables, start: s1.start });
   const s2 = { rules: s2r.rules, variables: s2r.variables, start: s2r.start };
   steps.push({ def: STEP_DEFS[2], state: cloneState(s2), result: s2r });
 
-  // Step 3
   const s3r = step_removeEpsilon(cloneState(s2));
   const s3 = { rules: s3r.rules, variables: s3r.variables, start: s3r.start };
   steps.push({ def: STEP_DEFS[3], state: cloneState(s3), result: s3r });
 
-  // Step 4
   const s4r = step_removeUnit(cloneState(s3));
   const s4 = { rules: s4r.rules, variables: s4r.variables, start: s4r.start };
   steps.push({ def: STEP_DEFS[4], state: cloneState(s4), result: s4r });
 
-  // Step 5 CNF
   const s5r = step_toCNF(cloneState(s4));
   const s5 = { rules: s5r.rules, variables: s5r.variables, start: s5r.start };
   steps.push({ def: STEP_DEFS[5], state: cloneState(s5), result: s5r });
 
-  // Step 6 GNF (from CNF state)
   const s6r = step_toGNF(cloneState(s5));
   const s6 = { rules: s6r.rules, variables: s6r.variables, start: s6r.start };
   steps.push({ def: STEP_DEFS[6], state: cloneState(s6), result: s6r });
@@ -1538,7 +1504,6 @@ function clearAll() {
     </div>`;
 }
 
-// Load first example on start
 loadEx(0);
 </script>
 </body>
