@@ -51,30 +51,36 @@ pip install numpy pandas matplotlib seaborn scikit-learn scipy \
 
 ### 4. Download datasets (run once)
 
+Run the following commands from **inside the `notebooks/` directory** so the data lands at `notebooks/data/` where the notebooks expect it:
+
 ```bash
+cd notebooks
+
 # House Prices
 kaggle competitions download -c house-prices-advanced-regression-techniques \
-  -p notebooks/data/house_prices --unzip
+  -p data/house_prices --unzip
 
 # Heart Disease
 kaggle datasets download -d johnsmith88/heart-disease-dataset \
-  -p notebooks/data/heart_disease --unzip
+  -p data/heart_disease --unzip
 
-# Fashion-MNIST  (also auto-downloaded by Keras)
+# Fashion-MNIST  (also auto-downloaded by Keras on first run)
 kaggle datasets download -d zalando-research/fashionmnist \
-  -p notebooks/data/fashion_mnist --unzip
+  -p data/fashion_mnist --unzip
 
 # Brain Stroke
 kaggle datasets download -d fedesoriano/stroke-prediction-dataset \
-  -p notebooks/data/stroke --unzip
+  -p data/stroke --unzip
 
 # SMS Spam
 kaggle datasets download -d uciml/sms-spam-collection-dataset \
-  -p notebooks/data/sms_spam --unzip
+  -p data/sms_spam --unzip
 
 # Brain Tumor (tabular features)
 kaggle datasets download -d jakeshbohaju/brain-tumor \
-  -p notebooks/data/brain_tumor --unzip
+  -p data/brain_tumor --unzip
+
+cd ..
 ```
 
 > **Offline / no-Kaggle mode:** Every notebook includes a synthetic data fallback — it will auto-generate a representative dataset if the Kaggle CSV is not found. This lets you run and learn from the code immediately.
